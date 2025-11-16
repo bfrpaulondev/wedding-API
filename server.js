@@ -6,6 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+
 const rsvpRoutes = require('./routes/rsvp.routes');
 const adminRoutes = require('./routes/admin.routes');
 const authRoutes = require('./routes/auth.routes');
@@ -13,27 +14,12 @@ const authRoutes = require('./routes/auth.routes');
 const app = express();
 
 /* ########################################
-   cors configuration
+   cors (liberado para qualquer origem)
 ######################################## */
-
-const allowedOrigins = [
-  process.env.CLIENT_ORIGIN || 'https://carolinaecarlos.netlify.app'
-];
 
 app.use(
   cors({
-    origin(origin, callback) {
-      // requests sem origin (curl, postman, etc.)
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'));
-    },
+    origin: true, // ecoa a origem automaticamente
     credentials: true,
   }),
 );
@@ -94,10 +80,6 @@ app.get('/api/health', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Erro não tratado:', err);
 
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({ message: 'Origem não permitida por CORS' });
-  }
-
   return res.status(err.status || 500).json({
     message: err.message || 'Erro interno no servidor',
   });
@@ -115,7 +97,7 @@ mongoose
   .then(() => {
     console.log('Conectado ao MongoDB');
     app.listen(PORT, () => {
-      console.log(`API ouvindo em http://localhost:${PORT}`);
+      console.log(`API a ouvir em http://localhost:${PORT}`);
       console.log(`Swagger em http://localhost:${PORT}/api-docs`);
     });
   })
