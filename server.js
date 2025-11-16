@@ -2,7 +2,6 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -14,18 +13,32 @@ const authRoutes = require('./routes/auth.routes');
 const app = express();
 
 /* ########################################
-   cors (liberado para qualquer origem)
+   cors manual (liberado para qualquer origem)
 ######################################## */
 
-app.use(
-  cors({
-    origin: true, // ecoa a origem automaticamente
-    credentials: true,
-  }),
-);
+app.use((req, res, next) => {
+  // permite qualquer domínio chamar a API
+  res.header('Access-Control-Allow-Origin', '*');
 
-// preflight para todos os endpoints
-app.options('*', cors());
+  // métodos permitidos
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  );
+
+  // cabeçalhos permitidos (inclui Authorization para admin)
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With',
+  );
+
+  // trata imediatamente o preflight
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 /* ########################################
    middlewares base
@@ -67,7 +80,7 @@ app.use('/api/rsvps', rsvpRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 
-// opcional: healthcheck simples
+// healthcheck simples
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -105,3 +118,5 @@ mongoose
     console.error('Erro ao conectar ao MongoDB:', err);
     process.exit(1);
   });
+
+module.exports = app;
