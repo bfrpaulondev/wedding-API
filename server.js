@@ -16,7 +16,7 @@ const app = express();
 // CORS liberado para dev
 app.use(
   cors({
-    origin: true, // reflete qualquer origin (http/https)
+    origin: true, 
     credentials: true,
   }),
 );
