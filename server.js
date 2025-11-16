@@ -17,9 +17,7 @@ const app = express();
 ######################################## */
 
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN || 'http://localhost:3000',
-  'http://localhost:3000',
-  'http://localhost:5173',
+  process.env.CLIENT_ORIGIN || 'https://carolinaecarlos.netlify.app'
 ];
 
 app.use(
