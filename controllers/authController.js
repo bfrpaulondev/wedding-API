@@ -34,7 +34,7 @@ async function register(req, res, next) {
     if (existing) {
       return res
         .status(409)
-        .json({ message: 'Já existe um usuário com esse email' });
+        .json({ message: 'Já existe um usuário com esse email, caso tenha perdido os seus acessos entre em contacto com os noivos.' });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
